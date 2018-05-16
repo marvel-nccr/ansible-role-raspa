@@ -12,6 +12,9 @@ An ansible role that installs [RASPA2](https://github.com/numat/RASPA2) on Ubunt
 
 See `defaults/main.yml`
 
+Note: By default, this role checks out RASPA from a private git repository and
+you will need to provide an SSH deploy key to access it.
+
 ## Example Playbook
 
   - hosts: servers

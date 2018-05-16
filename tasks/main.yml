@@ -1,9 +1,17 @@
 ---
+- name: Copy SSH deploy key
+  copy:
+    src: "{{ raspa_key_file }}"
+    dest: "{{ raspa_key_dest }}"
+    mode: 0400
+
 - name: Get raspa code code from github
   git:
     repo: "{{ raspa_url }}"
-    dest: "{{ raspa_topdir }}"
+    accept_hostkey: True
+    key_file: "{{ raspa_key_dest }}"
     version: "{{ raspa_version }}"
+    dest: "{{ raspa_topdir }}"
 
 - name: "Put a line in ~/.profile for RASPA_DIR"
   lineinfile:
@@ -35,7 +43,7 @@
     autoconf
   args:
     chdir: "{{ raspa_topdir }}"
-    creates: "{{ raspa_topdir }}/configure"
+    #creates: "{{ raspa_topdir }}/configure"
   register: raspa_autoreconf
 
 - name: raspa - configure
@@ -44,7 +52,7 @@
     chdir: "{{ raspa_topdir }}"
     #creates: "{{ raspa_topdir }}/Makefile"
   register: raspa_configure
-  when: raspa_autoreconf.changed
+  #when: raspa_autoreconf.changed
 
 - name: raspa - make
   make:
