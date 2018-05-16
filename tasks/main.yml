@@ -1,0 +1,87 @@
+---
+- name: Get raspa code code from github
+  git:
+    repo: "{{ raspa_url }}"
+    dest: "{{ raspa_topdir }}"
+    version: "{{ raspa_version }}"
+
+- name: "Put a line in ~/.profile for RASPA_DIR"
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.profile"
+    line: "export RASPA_DIR={{ raspa_install_dir }}"
+
+- name: "Create raspa install dir"
+  file:
+    path: "{{ raspa_install_dir }}"
+    state: directory
+
+- name: install packages
+  become: True
+  become_user: "{{ root_user }}"
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - autoconf
+    - libgmp3-dev
+
+- name: raspa - autoreconf
+  shell: |
+    rm -rf autom4te.cache
+    mkdir m4
+    aclocal
+    autoreconf -i
+    automake --add-missing
+    autoconf
+  args:
+    chdir: "{{ raspa_topdir }}"
+    creates: "{{ raspa_topdir }}/configure"
+  register: raspa_autoreconf
+
+- name: raspa - configure
+  shell: ./configure --prefix={{ raspa_install_dir }}
+  args:
+    chdir: "{{ raspa_topdir }}"
+    #creates: "{{ raspa_topdir }}/Makefile"
+  register: raspa_configure
+  when: raspa_autoreconf.changed
+
+- name: raspa - make
+  make:
+    chdir: "{{ raspa_topdir }}"
+  register: raspa_make
+
+#- name: raspa tests
+#  import_tasks: tests.yml
+#  when: raspa_make.changed and run_tests is defined and run_tests
+
+- name: raspa - make install
+  make:
+    chdir: "{{ raspa_topdir }}"
+    target: install
+  when: raspa_make.changed
+  register: raspa_make_install
+
+- name: "Put a line in ~/.profile to add raspa binary to the path"
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.profile"
+    line: "export PATH=${PATH}:{{ raspa_install_dir }}"
+
+- import_role:
+    name: release_notes
+  vars:
+    section: "raspa"
+    option: "version"
+    value: "{{ raspa_version }}"
+  when: release_notes
+
+
+- import_role:
+    name: release_notes
+  vars:
+    section: "raspa"
+    option: "usage"
+    value: >-
+        raspa is installed in {{ raspa_topdir }}. 
+        'simulate' has been added to the PATH
+  when: release_notes

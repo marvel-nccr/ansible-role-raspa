@@ -1,0 +1,16 @@
+raspa_version: "e59b0cb73c2d7f617f81a17b5bcba6eada81f74a"
+raspa_url: "https://github.com/numat/RASPA2.git"
+#raspa_version: "9fa6b2046aa9de830e2ee77aef6fb0b27519389f"
+#raspa_url: "https://github.com/EPFLISICLSMO/RASPA2_LSMO_WL_MOD.git"
+
+raspa_code_folder: "{{ ansible_env.HOME }}"
+#raspa_src: "RASPA2_LSMO_WL_MOD"
+raspa_src: "RASPA2"
+raspa_topdir: "{{ raspa_code_folder }}/{{raspa_src}}"
+raspa_install_dir: "{{ ansible_env.HOME }}/.local"
+ 
+raspa_executables:
+- name: simulate
+  folder: "{{ raspa_install_dir }}/bin"
+
+root_user: root
