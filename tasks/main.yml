@@ -75,7 +75,7 @@
     path: "{{ ansible_env.HOME }}/.profile"
     line: "export PATH=${PATH}:{{ raspa_install_dir }}"
 
-- import_role:
+- include_role:
     name: release_notes
   vars:
     section: "raspa"
@@ -84,7 +84,7 @@
   when: release_notes
 
 
-- import_role:
+- include_role:
     name: release_notes
   vars:
     section: "raspa"
