@@ -22,8 +22,8 @@
     name:
       - autoconf
       - libgmp3-dev
-      - gcc
       - libtool
+      - build-essential
     state: present
 
 
