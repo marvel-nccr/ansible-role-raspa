@@ -1,16 +1,16 @@
-raspa_version: "3bfaaa9c3b46f214b1e796de0250fb84d8c67caf"
-raspa_url: "git@github.com:EPFLISICLSMO/raspa2-fork.git"
+---
+raspa_version: "v2.0.36"
+raspa_url: "https://github.com/iRASPA/RASPA2.git"
 raspa_key_file: ""
 raspa_key_dest: "$HOME/.ssh/raspa-deploy"
 
 raspa_code_folder: "{{ ansible_env.HOME }}"
-#raspa_src: "RASPA2_LSMO_WL_MOD"
 raspa_src: "RASPA2"
 raspa_topdir: "{{ raspa_code_folder }}/{{raspa_src}}"
 raspa_install_dir: "{{ ansible_env.HOME }}/.local"
- 
+
 raspa_executables:
-- name: simulate
-  folder: "{{ raspa_install_dir }}/bin"
+  - name: simulate
+    folder: "{{ raspa_install_dir }}/bin"
 
 root_user: root

@@ -1,15 +1,7 @@
 ---
-- name: Copy SSH deploy key
-  copy:
-    src: "{{ raspa_key_file }}"
-    dest: "{{ raspa_key_dest }}"
-    mode: 0400
-
 - name: Get raspa code code from github
   git:
     repo: "{{ raspa_url }}"
-    accept_hostkey: True
-    key_file: "{{ raspa_key_dest }}"
     version: "{{ raspa_version }}"
     dest: "{{ raspa_topdir }}"
 
@@ -24,14 +16,14 @@
     state: directory
 
 - name: install packages
-  become: True
+  become: true
   become_user: "{{ root_user }}"
   apt:
-    name: "{{ item }}"
+    name:
+      - autoconf
+      - libgmp3-dev
+      - gcc
     state: present
-  with_items:
-    - autoconf
-    - libgmp3-dev
 
 - name: raspa - autoreconf
   shell: |
@@ -43,25 +35,31 @@
     autoconf
   args:
     chdir: "{{ raspa_topdir }}"
-    #creates: "{{ raspa_topdir }}/configure"
+    creates: "{{ raspa_topdir }}/configure"
   register: raspa_autoreconf
+  tags:
+    - skip_ansible_lint
+
+# ansiblelint disable rule:ansible0016
 
 - name: raspa - configure
-  shell: ./configure --prefix={{ raspa_install_dir }}
+  command: ./configure --prefix={{ raspa_install_dir }}
   args:
     chdir: "{{ raspa_topdir }}"
-    #creates: "{{ raspa_topdir }}/Makefile"
+    creates: "{{ raspa_topdir }}/Makefile"
   register: raspa_configure
-  #when: raspa_autoreconf.changed
+  when: raspa_autoreconf.changed
+  tags:
+    - skip_ansible_lint
 
 - name: raspa - make
   make:
     chdir: "{{ raspa_topdir }}"
   register: raspa_make
 
-#- name: raspa tests
-#  import_tasks: tests.yml
-#  when: raspa_make.changed and run_tests is defined and run_tests
+# - name: raspa tests
+#   import_tasks: tests.yml
+#   when: raspa_make.changed and run_tests is defined and run_tests
 
 - name: raspa - make install
   make:
@@ -69,6 +67,8 @@
     target: install
   when: raspa_make.changed
   register: raspa_make_install
+  tags:
+    - skip_ansible_lint
 
 - name: "Put a line in ~/.profile to add raspa binary to the path"
   lineinfile:
@@ -90,6 +90,6 @@
     section: "raspa"
     option: "usage"
     value: >-
-        raspa is installed in {{ raspa_topdir }}. 
+        raspa is installed in {{ raspa_topdir }}.
         'simulate' has been added to the PATH
   when: release_notes
