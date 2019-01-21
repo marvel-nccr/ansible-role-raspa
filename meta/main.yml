@@ -4,7 +4,7 @@ allow_duplicates: false
 galaxy_info:
   role_name: "raspa"
   author: "MARVEL NCCR"
-  description: "An ansible role that installs [RASPA2](https://github.com/numat/RASPA2) on Ubuntu."
+  description: "An ansible role that installs [RASPA2](https://github.com/iRASPA/RASPA2.git) on Ubuntu."
   license: MIT
   min_ansible_version: 2.5
   platforms:

@@ -2,7 +2,7 @@
 
 # Ansible Role: marvel-nccr.raspa
 
-An ansible role that installs [RASPA2](https://github.com/numat/RASPA2) on Ubuntu.
+An ansible role that installs [RASPA2](https://github.com/iRASPA/RASPA2.git) on Ubuntu.
 
 ## Installation
 
