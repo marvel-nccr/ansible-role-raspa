@@ -10,7 +10,8 @@ raspa_topdir: "{{ raspa_code_folder }}/{{raspa_src}}"
 raspa_install_dir: "{{ ansible_env.HOME }}/.local"
 
 raspa_executables:
-  - name: simulate
-    folder: "{{ raspa_install_dir }}/bin"
+- name: simulate
+  folder: "{{ raspa_install_dir }}/bin"
+  plugin: raspa
 
 root_user: root
