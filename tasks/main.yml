@@ -23,7 +23,9 @@
       - autoconf
       - libgmp3-dev
       - gcc
+      - libtool
     state: present
+
 
 - name: raspa - autoreconf
   shell: |
