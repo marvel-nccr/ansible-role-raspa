@@ -8,12 +8,7 @@
 - name: "Put a line in ~/.profile for RASPA_DIR"
   lineinfile:
     path: "{{ ansible_env.HOME }}/.profile"
-    line: "export RASPA_DIR={{ raspa_install_dir }}"
-
-- name: "Create raspa install dir"
-  file:
-    path: "{{ raspa_install_dir }}"
-    state: directory
+    line: "export RASPA_DIR={{ raspa_prefix }}"
 
 - name: install packages
   become: true
@@ -45,7 +40,7 @@
 # ansiblelint disable rule:ansible0016
 
 - name: raspa - configure
-  command: ./configure --prefix={{ raspa_install_dir }}
+  command: ./configure --prefix={{ raspa_prefix }}
   args:
     chdir: "{{ raspa_topdir }}"
     creates: "{{ raspa_topdir }}/Makefile"
@@ -64,6 +59,8 @@
 #   when: raspa_make.changed and run_tests is defined and run_tests
 
 - name: raspa - make install
+  become: true
+  become_user: "{{ root_user }}"
   make:
     chdir: "{{ raspa_topdir }}"
     target: install
@@ -75,7 +72,7 @@
 - name: "Put a line in ~/.profile to add raspa binary to the path"
   lineinfile:
     path: "{{ ansible_env.HOME }}/.profile"
-    line: "export PATH=${PATH}:{{ raspa_install_dir }}"
+    line: "export PATH=${PATH}:{{ raspa_prefix }}/bin"
 
 - include_role:
     name: release_notes
@@ -92,6 +89,6 @@
     section: "raspa"
     option: "usage"
     value: >-
-        raspa is installed in {{ raspa_topdir }}.
+        raspa {{ raspa_version }} has been installed in {{ raspa_prefix }}.
         'simulate' has been added to the PATH
   when: release_notes is defined and release_notes
