@@ -14,5 +14,6 @@ raspa_executables:
   - name: simulate
     folder: "{{ raspa_install_dir }}/bin"
     plugin: raspa
+    version: "{{ raspa_version }}"
 
 root_user: root
